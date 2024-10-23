@@ -43,3 +43,10 @@ As contribuições são bem-vindas. Por favor, abra um issue ou um pull request 
 ## Licença
 
 Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](LICENSE) para obter mais detalhes.
+
+## Atualizações Recentes
+
+### Reorganização da Interface
+
+- Os elementos de entrada estão agora à esquerda e o resultado à direita.
+- Adicionada uma barra de rolagem ao widget de texto para permitir o deslocamento quando o conteúdo é muito grande.
