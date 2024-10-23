@@ -16,7 +16,8 @@ def convert():
     elif input_type == "Hexadecimal":
         decimal_value, input_steps = hexadecimal_to_decimal(input_value)
     else:
-        result_label.config(text="Tipo de entrada no válido")
+        result_text.delete(1.0, tk.END)
+        result_text.insert(tk.END, "Tipo de entrada no válido")
         return
 
     if output_type == "Binário":
@@ -29,15 +30,15 @@ def convert():
     elif output_type == "Hexadecimal":
         result, output_steps = decimal_to_hexadecimal(decimal_value)
     else:
-        result_label.config(text="Tipo de salida no válido")
+        result_text.delete(1.0, tk.END)
+        result_text.insert(tk.END, "Tipo de salida no válido")
         return
 
-    result_label.config(text=f"Resultado: {result}")
-    all_steps = input_steps + output_steps
-    steps_label.config(text="Passos:\n" + "\n".join(all_steps))
+    result_text.delete(1.0, tk.END)
+    result_text.insert(tk.END, f"Resultado: {result}\n\nPassos:\n" + "\n".join(input_steps + output_steps))
 
 def copy_steps():
-    steps = steps_label.cget("text")
+    steps = result_text.get(1.0, tk.END)
     root.clipboard_clear()
     root.clipboard_append(steps)
     root.update()  # Necesario para que el portapapeles se actualice
@@ -57,7 +58,7 @@ style.configure('TEntry', font=('Arial', 16))
 style.configure('TCombobox', font=('Arial', 16))
 
 # Layout
-main_frame = ttk.Frame(root, padding="20 20 20 20")
+main_frame = ttk.Frame(root, padding="20 20 20 20", style='TFrame')
 main_frame.grid(column=0, row=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
@@ -69,29 +70,42 @@ input_entry = tk.StringVar()
 result_var = tk.StringVar()
 
 # Widgets
-ttk.Label(main_frame, text="Tipo de Entrada:").grid(column=1, row=1, sticky=tk.E, pady=10)
-input_type_menu = ttk.Combobox(main_frame, textvariable=input_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])
-input_type_menu.grid(column=2, row=1, sticky=(tk.W, tk.E), pady=10)
+# Sección de entrada a la izquierda
+input_frame = ttk.Frame(main_frame, padding="20 20 20 20", style='TFrame')
+input_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
+input_frame.columnconfigure(0, weight=1)
+input_frame.rowconfigure(0, weight=1)
 
-ttk.Label(main_frame, text="Número:").grid(column=1, row=2, sticky=tk.E, pady=10)
-input_entry_widget = ttk.Entry(main_frame, textvariable=input_entry)
-input_entry_widget.grid(column=2, row=2, sticky=(tk.W, tk.E), pady=10)
+ttk.Label(input_frame, text="Tipo de Entrada:").grid(column=0, row=0, sticky=tk.W, pady=10)
+input_type_menu = ttk.Combobox(input_frame, textvariable=input_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])
+input_type_menu.grid(column=1, row=0, sticky=(tk.W, tk.E), pady=10)
 
-ttk.Label(main_frame, text="Tipo de Saída:").grid(column=1, row=3, sticky=tk.E, pady=10)
-output_type_menu = ttk.Combobox(main_frame, textvariable=output_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])
-output_type_menu.grid(column=2, row=3, sticky=(tk.W, tk.E), pady=10)
+ttk.Label(input_frame, text="Número:").grid(column=0, row=1, sticky=tk.W, pady=10)
+input_entry_widget = ttk.Entry(input_frame, textvariable=input_entry)
+input_entry_widget.grid(column=1, row=1, sticky=(tk.W, tk.E), pady=10)
 
-convert_button = ttk.Button(main_frame, text="Converter", command=convert)
-convert_button.grid(column=2, row=4, sticky=tk.W, pady=20)
+ttk.Label(input_frame, text="Tipo de Saída:").grid(column=0, row=2, sticky=tk.W, pady=10)
+output_type_menu = ttk.Combobox(input_frame, textvariable=output_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])
+output_type_menu.grid(column=1, row=2, sticky=(tk.W, tk.E), pady=10)
 
-result_label = ttk.Label(main_frame, text="Resultado:")
-result_label.grid(column=1, row=5, columnspan=2, sticky=(tk.W, tk.E), pady=10)
+convert_button = ttk.Button(input_frame, text="Converter", command=convert)
+convert_button.grid(column=1, row=3, sticky=tk.W, pady=20)
 
-steps_label = ttk.Label(main_frame, text="Passos:")
-steps_label.grid(column=1, row=6, columnspan=2, sticky=(tk.W, tk.E), pady=10)
+copy_button = ttk.Button(input_frame, text="Copiar Passos", command=copy_steps)
+copy_button.grid(column=1, row=4, sticky=tk.W, pady=20)
 
-copy_button = ttk.Button(main_frame, text="Copiar Passos", command=copy_steps)
-copy_button.grid(column=2, row=7, sticky=tk.W, pady=20)
+# Sección de resultado a la derecha
+result_frame = ttk.Frame(main_frame, padding="20 20 20 20", style='TFrame')
+result_frame.grid(column=1, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))
+result_frame.columnconfigure(0, weight=1)
+result_frame.rowconfigure(0, weight=1)
+
+result_text = tk.Text(result_frame, wrap="word", font=('Arial', 16), bg='#f0f0f0', relief='flat')
+result_text.grid(column=0, row=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+
+scrollbar = ttk.Scrollbar(result_frame, orient="vertical", command=result_text.yview)
+scrollbar.grid(column=1, row=0, sticky=(tk.N, tk.S))
+result_text['yscrollcommand'] = scrollbar.set
 
 # Padding
 for child in main_frame.winfo_children():
