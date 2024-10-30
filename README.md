@@ -57,3 +57,4 @@ Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](L
 - Os elementos de entrada estão agora centrados na interface.
 - Adicionada uma barra de rolagem ao widget de texto para permitir o deslocamento quando o conteúdo é muito grande.
 - Melhorias no estilo da interface utilizando QSS para um tema moderno e escuro.
+- As conversões serão feitas em real time
