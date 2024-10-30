@@ -1,187 +1,309 @@
-import tkinter as tk  # Importa o módulo tkinter para criar a interface gráfica
-from tkinter import ttk  # Importa o módulo ttk para usar widgets com estilo
+import sys
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QComboBox
+from PyQt6.QtCore import Qt
 
-# Função para converter os números
-def convert():
-    input_type = input_type_var.get()  # Obtém o tipo de entrada selecionado
-    output_type = output_type_var.get()  # Obtém o tipo de saída selecionado
-    input_value = input_entry.get()  # Obtém o valor de entrada
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Conversor de Números")
+        self.setGeometry(100, 100, 800, 600)
 
-    # Verifica o tipo de entrada e converte para decimal
-    if input_type == "Binário":
-        decimal_value, input_steps = binary_to_decimal(input_value)  # Converte binário para decimal
-    elif input_type == "Decimal":
-        decimal_value = int(input_value)  # Converte a entrada para inteiro
-        input_steps = [f"Entrada Decimal: {input_value}"]  # Regista o passo da conversão
-    elif input_type == "Octal":
-        decimal_value, input_steps = octal_to_decimal(input_value)  # Converte octal para decimal
-    elif input_type == "Hexadecimal":
-        decimal_value, input_steps = hexadecimal_to_decimal(input_value)  # Converte hexadecimal para decimal
-    else:
-        result_text.delete(1.0, tk.END)  # Limpa o texto do resultado
-        result_text.insert(tk.END, "Tipo de entrada não válido")  # Exibe mensagem de erro
-        return  # Sai da função
+        self.tabs = QTabWidget()
+        self.setCentralWidget(self.tabs)
 
-    # Converte de decimal para o tipo de saída desejado
-    if output_type == "Binário":
-        result, output_steps = decimal_to_binary(decimal_value)  # Converte decimal para binário
-    elif output_type == "Decimal":
-        result = str(decimal_value)  # Converte o valor decimal para string
-        output_steps = []  # Não há passos adicionais para decimal
-    elif output_type == "Octal":
-        result, output_steps = decimal_to_octal(decimal_value)  # Converte decimal para octal
-    elif output_type == "Hexadecimal":
-        result, output_steps = decimal_to_hexadecimal(decimal_value)  # Converte decimal para hexadecimal
-    else:
-        result_text.delete(1.0, tk.END)  # Limpa o texto do resultado
-        result_text.insert(tk.END, "Tipo de saída não válido")  # Exibe mensagem de erro
-        return  # Sai da função
+        self.conversion_tab = QWidget()
+        self.sum_tab = QWidget()
+        self.multiply_tab = QWidget()
 
-    # Exibe o resultado e os passos da conversão
-    result_text.delete(1.0, tk.END)  # Limpa o texto do resultado
-    result_text.insert(tk.END, f"Resultado: {result}\n\nPassos:\n" + "\n".join(input_steps + output_steps))  # Insere o resultado e os passos
+        self.tabs.addTab(self.conversion_tab, "Conversão")
+        self.tabs.addTab(self.sum_tab, "Soma de Binários")
+        self.tabs.addTab(self.multiply_tab, "Multiplicação de Binários")
 
-# Função para copiar os passos da conversão para a área de transferência
-def copy_steps():
-    steps = result_text.get(1.0, tk.END)  # Obtém o texto dos passos
-    root.clipboard_clear()  # Limpa a área de transferência
-    root.clipboard_append(steps)  # Adiciona os passos à área de transferência
-    root.update()  # Necessário para que a área de transferência seja atualizada
-    print("Passos copiados para a área de transferência")  # Exibe mensagem no console
+        self.init_conversion_tab()
+        self.init_sum_tab()
+        self.init_multiply_tab()
 
-# Configuração da janela principal
-root = tk.Tk()  # Cria a janela principal
-root.title("Conversor de Números")  # Define o título da janela
-root.state('zoomed')  # Abrir em ecrã completo
+        self.apply_styles()
 
-# Estilo
-style = ttk.Style()  # Cria um objeto de estilo
-style.theme_use('clam')  # Define o tema 'clam'
-style.configure('TLabel', background='#f0f0f0', font=('Arial', 16))  # Configura o estilo das etiquetas
-style.configure('TButton', background='#4CAF50', foreground='white', font=('Arial', 16))  # Configura o estilo dos botões
-style.configure('TEntry', font=('Arial', 16))  # Configura o estilo das entradas de texto
-style.configure('TCombobox', font=('Arial', 16))  # Configura o estilo das caixas de combinação
+    def init_conversion_tab(self):
+        layout = QVBoxLayout()
 
-# Layout
-main_frame = ttk.Frame(root, padding="20 20 20 20", style='TFrame')  # Cria o frame principal
-main_frame.grid(column=0, row=0, sticky=(tk.W, tk.E, tk.N, tk.S))  # Posiciona o frame principal
-root.columnconfigure(0, weight=1)  # Configura a coluna para expandir
-root.rowconfigure(0, weight=1)  # Configura a linha para expandir
+        # Layout para tipo de entrada
+        input_type_layout = QHBoxLayout()
+        input_type_layout.addWidget(QLabel("Tipo de Entrada:"))
+        self.input_type_combo = QComboBox()
+        self.input_type_combo.addItems(["Binário", "Decimal", "Octal", "Hexadecimal"])
+        self.input_type_combo.setMaximumWidth(200)
+        input_type_layout.addWidget(self.input_type_combo)
+        input_type_layout.addStretch()
+        layout.addLayout(input_type_layout)
 
-# Variáveis
-input_type_var = tk.StringVar()  # Cria uma variável de string para o tipo de entrada
-output_type_var = tk.StringVar()  # Cria uma variável de string para o tipo de saída
-input_entry = tk.StringVar()  # Cria uma variável de string para a entrada de texto
-result_var = tk.StringVar()  # Cria uma variável de string para o resultado
+        # Layout para número de entrada
+        input_number_layout = QHBoxLayout()
+        input_number_layout.addWidget(QLabel("Número:"))
+        self.input_entry = QLineEdit()
+        self.input_entry.setMaximumWidth(200)
+        input_number_layout.addWidget(self.input_entry)
+        input_number_layout.addStretch()
+        layout.addLayout(input_number_layout)
 
-# Widgets
-# Seção de entrada à esquerda
-input_frame = ttk.Frame(main_frame, padding="20 20 20 20", style='TFrame')  # Cria o frame de entrada
-input_frame.grid(column=0, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))  # Posiciona o frame de entrada
-input_frame.columnconfigure(0, weight=1)  # Configura a coluna para expandir
-input_frame.rowconfigure(0, weight=1)  # Configura a linha para expandir
+        # Layout para tipo de saída
+        output_type_layout = QHBoxLayout()
+        output_type_layout.addWidget(QLabel("Tipo de Saída:"))
+        self.output_type_combo = QComboBox()
+        self.output_type_combo.addItems(["Binário", "Decimal", "Octal", "Hexadecimal"])
+        self.output_type_combo.setMaximumWidth(200)
+        output_type_layout.addWidget(self.output_type_combo)
+        output_type_layout.addStretch()
+        layout.addLayout(output_type_layout)
 
-ttk.Label(input_frame, text="Tipo de Entrada:").grid(column=0, row=0, sticky=tk.W, pady=10)  # Cria e posiciona a etiqueta do tipo de entrada
-input_type_menu = ttk.Combobox(input_frame, textvariable=input_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])  # Cria a caixa de combinação para o tipo de entrada
-input_type_menu.grid(column=1, row=0, sticky=(tk.W, tk.E), pady=10)  # Posiciona a caixa de combinação
+        # Botão de conversão
+        self.convert_button = QPushButton("Converter")
+        self.convert_button.setMinimumSize(200, 50)
+        self.convert_button.clicked.connect(self.convert)
+        layout.addWidget(self.convert_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-ttk.Label(input_frame, text="Número:").grid(column=0, row=1, sticky=tk.W, pady=10)  # Cria e posiciona a etiqueta do número
-input_entry_widget = ttk.Entry(input_frame, textvariable=input_entry)  # Cria a entrada de texto para o número
-input_entry_widget.grid(column=1, row=1, sticky=(tk.W, tk.E), pady=10)  # Posiciona a entrada de texto
+        # Texto de resultado
+        self.result_text = QTextEdit()
+        layout.addWidget(self.result_text)
 
-ttk.Label(input_frame, text="Tipo de Saída:").grid(column=0, row=2, sticky=tk.W, pady=10)  # Cria e posiciona a etiqueta do tipo de saída
-output_type_menu = ttk.Combobox(input_frame, textvariable=output_type_var, values=["Binário", "Decimal", "Octal", "Hexadecimal"])  # Cria a caixa de combinação para o tipo de saída
-output_type_menu.grid(column=1, row=2, sticky=(tk.W, tk.E), pady=10)  # Posiciona a caixa de combinação
+        self.conversion_tab.setLayout(layout)
 
-convert_button = ttk.Button(input_frame, text="Converter", command=convert)  # Cria o botão de conversão
-convert_button.grid(column=1, row=3, sticky=tk.W, pady=20)  # Posiciona o botão de conversão
+    def init_sum_tab(self):
+        layout = QVBoxLayout()
 
-copy_button = ttk.Button(input_frame, text="Copiar Passos", command=copy_steps)  # Cria o botão para copiar os passos
-copy_button.grid(column=1, row=4, sticky=tk.W, pady=20)  # Posiciona o botão para copiar os passos
+        # Layout para número 1
+        input_sum1_layout = QHBoxLayout()
+        input_sum1_layout.addWidget(QLabel("Número 1:"))
+        self.input_entry_sum1 = QLineEdit()
+        self.input_entry_sum1.setMaximumWidth(200)
+        input_sum1_layout.addWidget(self.input_entry_sum1)
+        input_sum1_layout.addStretch()
+        layout.addLayout(input_sum1_layout)
 
-# Seção de resultado à direita
-result_frame = ttk.Frame(main_frame, padding="20 20 20 20", style='TFrame')  # Cria o frame de resultado
-result_frame.grid(column=1, row=0, sticky=(tk.N, tk.S, tk.W, tk.E))  # Posiciona o frame de resultado
-result_frame.columnconfigure(0, weight=1)  # Configura a coluna para expandir
-result_frame.rowconfigure(0, weight=1)  # Configura a linha para expandir
+        # Layout para número 2
+        input_sum2_layout = QHBoxLayout()
+        input_sum2_layout.addWidget(QLabel("Número 2:"))
+        self.input_entry_sum2 = QLineEdit()
+        self.input_entry_sum2.setMaximumWidth(200)
+        input_sum2_layout.addWidget(self.input_entry_sum2)
+        input_sum2_layout.addStretch()
+        layout.addLayout(input_sum2_layout)
 
-result_text = tk.Text(result_frame, wrap="word", font=('Arial', 16), bg='#f0f0f0', relief='flat')  # Cria o widget de texto para o resultado
-result_text.grid(column=0, row=0, sticky=(tk.W, tk.E, tk.N, tk.S))  # Posiciona o widget de texto
+        # Botão de soma
+        self.sum_button = QPushButton("Somar")
+        self.sum_button.setMinimumSize(200, 50)
+        self.sum_button.clicked.connect(self.sum_binary)
+        layout.addWidget(self.sum_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-scrollbar = ttk.Scrollbar(result_frame, orient="vertical", command=result_text.yview)  # Cria a barra de rolagem vertical
-scrollbar.grid(column=1, row=0, sticky=(tk.N, tk.S))  # Posiciona a barra de rolagem
-result_text['yscrollcommand'] = scrollbar.set  # Configura a barra de rolagem para o widget de texto
+        # Texto de resultado
+        self.result_text_sum = QTextEdit()
+        layout.addWidget(self.result_text_sum)
 
-# Padding
-for child in main_frame.winfo_children():
-    child.grid_configure(padx=20, pady=10)  # Adiciona padding aos widgets
+        self.sum_tab.setLayout(layout)
 
-# Funções de conversão
-def binary_to_decimal(binary_str):
-    decimal = 0
-    steps = []
-    for i, digit in enumerate(reversed(binary_str)):
-        value = int(digit) * (2 ** i)
-        decimal += value
-        steps.append(f"{digit} * 2^{i} = {value}")
-    steps.append(f"Resultado final: {decimal}")
-    return decimal, steps
+    def init_multiply_tab(self):
+        layout = QVBoxLayout()
 
-def decimal_to_binary(decimal_int):
-    binary = ""
-    steps = []
-    n = int(decimal_int)
-    while n > 0:
-        remainder = n % 2
-        binary = str(remainder) + binary
-        steps.append(f"{n} / 2 = {n // 2}, Resto = {remainder}")
-        n = n // 2
-    steps.append(f"Resultado final: {binary}")
-    return binary, steps
+        # Layout para número 1
+        input_multiply1_layout = QHBoxLayout()
+        input_multiply1_layout.addWidget(QLabel("Número 1:"))
+        self.input_entry_multiply1 = QLineEdit()
+        self.input_entry_multiply1.setMaximumWidth(200)
+        input_multiply1_layout.addWidget(self.input_entry_multiply1)
+        input_multiply1_layout.addStretch()
+        layout.addLayout(input_multiply1_layout)
 
-def decimal_to_octal(decimal_int):
-    octal = ""
-    steps = []
-    n = int(decimal_int)
-    while n > 0:
-        remainder = n % 8
-        octal = str(remainder) + octal
-        steps.append(f"{n} / 8 = {n // 8}, Resto = {remainder}")
-        n = n // 8
-    steps.append(f"Resultado final: {octal}")
-    return octal, steps
+        # Layout para número 2
+        input_multiply2_layout = QHBoxLayout()
+        input_multiply2_layout.addWidget(QLabel("Número 2:"))
+        self.input_entry_multiply2 = QLineEdit()
+        self.input_entry_multiply2.setMaximumWidth(200)
+        input_multiply2_layout.addWidget(self.input_entry_multiply2)
+        input_multiply2_layout.addStretch()
+        layout.addLayout(input_multiply2_layout)
 
-def decimal_to_hexadecimal(decimal_int):
-    hexadecimal = ""
-    steps = []
-    n = int(decimal_int)
-    while n > 0:
-        remainder = n % 16
-        hex_digit = hex(remainder)[2:].upper()
-        hexadecimal = hex_digit + hexadecimal
-        steps.append(f"{n} / 16 = {n // 16}, Resto = {remainder} ({hex_digit})")
-        n = n // 16
-    steps.append(f"Resultado final: {hexadecimal}")
-    return hexadecimal, steps
+        # Botão de multiplicação
+        self.multiply_button = QPushButton("Multiplicar")
+        self.multiply_button.setMinimumSize(200, 50)
+        self.multiply_button.clicked.connect(self.multiply_binary)
+        layout.addWidget(self.multiply_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
-def octal_to_decimal(octal_str):
-    decimal = 0
-    steps = []
-    for i, digit in enumerate(reversed(octal_str)):
-        value = int(digit) * (8 ** i)
-        decimal += value
-        steps.append(f"{digit} * 8^{i} = {value}")
-    steps.append(f"Resultado final: {decimal}")
-    return decimal, steps
+        # Texto de resultado
+        self.result_text_multiply = QTextEdit()
+        layout.addWidget(self.result_text_multiply)
 
-def hexadecimal_to_decimal(hex_str):
-    decimal = 0
-    steps = []
-    for i, digit in enumerate(reversed(hex_str)):
-        value = int(digit, 16) * (16 ** i)
-        decimal += value
-        steps.append(f"{digit} * 16^{i} = {value}")
-    steps.append(f"Resultado final: {decimal}")
-    return decimal, steps
+        self.multiply_tab.setLayout(layout)
 
-root.mainloop()  # Inicia o loop principal da aplicação
+    def convert(self):
+        input_type = self.input_type_combo.currentText()
+        output_type = self.output_type_combo.currentText()
+        input_value = self.input_entry.text()
+
+        if input_type == "Binário":
+            decimal_value, input_steps = self.binary_to_decimal(input_value)
+        elif input_type == "Decimal":
+            decimal_value = int(input_value)
+            input_steps = [f"Entrada Decimal: {input_value}"]
+        elif input_type == "Octal":
+            decimal_value, input_steps = self.octal_to_decimal(input_value)
+        elif input_type == "Hexadecimal":
+            decimal_value, input_steps = self.hexadecimal_to_decimal(input_value)
+        else:
+            self.result_text.setText("Tipo de entrada não válido")
+            return
+
+        if output_type == "Binário":
+            result, output_steps = self.decimal_to_binary(decimal_value)
+        elif output_type == "Decimal":
+            result = str(decimal_value)
+            output_steps = []
+        elif output_type == "Octal":
+            result, output_steps = self.decimal_to_octal(decimal_value)
+        elif output_type == "Hexadecimal":
+            result, output_steps = self.decimal_to_hexadecimal(decimal_value)
+        else:
+            self.result_text.setText("Tipo de saída não válido")
+            return
+
+        self.result_text.setText(f"Resultado: {result}\n\nPassos:\n" + "\n".join(input_steps + output_steps))
+
+    def sum_binary(self):
+        bin1 = self.input_entry_sum1.text()
+        bin2 = self.input_entry_sum2.text()
+        decimal1 = int(bin1, 2)
+        decimal2 = int(bin2, 2)
+        sum_result = decimal1 + decimal2
+        binary_result = bin(sum_result)[2:]
+        self.result_text_sum.setText(f"Soma: {binary_result}")
+
+    def multiply_binary(self):
+        bin1 = self.input_entry_multiply1.text()
+        bin2 = self.input_entry_multiply2.text()
+        decimal1 = int(bin1, 2)
+        decimal2 = int(bin2, 2)
+        multiply_result = decimal1 * decimal2
+        binary_result = bin(multiply_result)[2:]
+        self.result_text_multiply.setText(f"Multiplicação: {binary_result}")
+
+    def binary_to_decimal(self, binary_str):
+        decimal = 0
+        steps = []
+        for i, digit in enumerate(reversed(binary_str)):
+            value = int(digit) * (2 ** i)
+            decimal += value
+            steps.append(f"{digit} * 2^{i} = {value}")
+        steps.append(f"Resultado final: {decimal}")
+        return decimal, steps
+
+    def decimal_to_binary(self, decimal_int):
+        binary = ""
+        steps = []
+        n = int(decimal_int)
+        while n > 0:
+            remainder = n % 2
+            binary = str(remainder) + binary
+            steps.append(f"{n} / 2 = {n // 2}, Resto = {remainder}")
+            n = n // 2
+        steps.append(f"Resultado final: {binary}")
+        return binary, steps
+
+    def decimal_to_octal(self, decimal_int):
+        octal = ""
+        steps = []
+        n = int(decimal_int)
+        while n > 0:
+            remainder = n % 8
+            octal = str(remainder) + octal
+            steps.append(f"{n} / 8 = {n // 8}, Resto = {remainder}")
+            n = n // 8
+        steps.append(f"Resultado final: {octal}")
+        return octal, steps
+
+    def decimal_to_hexadecimal(self, decimal_int):
+        hexadecimal = ""
+        steps = []
+        n = int(decimal_int)
+        while n > 0:
+            remainder = n % 16
+            hex_digit = hex(remainder)[2:].upper()
+            hexadecimal = hex_digit + hexadecimal
+            steps.append(f"{n} / 16 = {n // 16}, Resto = {remainder} ({hex_digit})")
+            n = n // 16
+        steps.append(f"Resultado final: {hexadecimal}")
+        return hexadecimal, steps
+
+    def octal_to_decimal(self, octal_str):
+        decimal = 0
+        steps = []
+        for i, digit in enumerate(reversed(octal_str)):
+            value = int(digit) * (8 ** i)
+            decimal += value
+            steps.append(f"{digit} * 8^{i} = {value}")
+        steps.append(f"Resultado final: {decimal}")
+        return decimal, steps
+
+    def hexadecimal_to_decimal(self, hex_str):
+        decimal = 0
+        steps = []
+        for i, digit in enumerate(reversed(hex_str)):
+            value = int(digit, 16) * (16 ** i)
+            decimal += value
+            steps.append(f"{digit} * 16^{i} = {value}")
+        steps.append(f"Resultado final: {decimal}")
+        return decimal, steps
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #f0f0f0;
+            }
+            QLabel {
+                font-size: 14px;
+                color: #333;
+            }
+            QLineEdit {
+                font-size: 14px;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            QLineEdit:focus {
+                border: 1px solid #0078d7;
+            }
+            QPushButton {
+                font-size: 14px;
+                padding: 10px;
+                background-color: #0078d7;
+                color: white;
+                border: none;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #005bb5;
+            }
+            QPushButton:pressed {
+                background-color: #003f8a;
+            }
+            QTextEdit {
+                font-size: 14px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            QComboBox {
+                font-size: 14px;
+                padding: 5px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+            }
+            QComboBox:focus {
+                border: 1px solid #0078d7;
+            }
+        """)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
