@@ -29,32 +29,35 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Layout para tipo de entrada
-        input_type_layout = QHBoxLayout()
-        input_type_layout.addWidget(QLabel("Tipo de Entrada:"))
+        input_type_layout = QVBoxLayout()
+        input_type_label = QLabel("Tipo de Entrada:")
+        input_type_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_type_layout.addWidget(input_type_label)
         self.input_type_combo = QComboBox()
         self.input_type_combo.addItems(["Binário", "Decimal", "Octal", "Hexadecimal"])
         self.input_type_combo.setMaximumWidth(200)
-        input_type_layout.addWidget(self.input_type_combo)
-        input_type_layout.addStretch()
+        input_type_layout.addWidget(self.input_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_type_layout)
 
         # Layout para número de entrada
-        input_number_layout = QHBoxLayout()
-        input_number_layout.addWidget(QLabel("Número:"))
+        input_number_layout = QVBoxLayout()
+        input_number_label = QLabel("Número:")
+        input_number_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_number_layout.addWidget(input_number_label)
         self.input_entry = QLineEdit()
         self.input_entry.setMaximumWidth(200)
-        input_number_layout.addWidget(self.input_entry)
-        input_number_layout.addStretch()
+        input_number_layout.addWidget(self.input_entry, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_number_layout)
 
         # Layout para tipo de saída
-        output_type_layout = QHBoxLayout()
-        output_type_layout.addWidget(QLabel("Tipo de Saída:"))
+        output_type_layout = QVBoxLayout()
+        output_type_label = QLabel("Tipo de Saída:")
+        output_type_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        output_type_layout.addWidget(output_type_label)
         self.output_type_combo = QComboBox()
         self.output_type_combo.addItems(["Binário", "Decimal", "Octal", "Hexadecimal"])
         self.output_type_combo.setMaximumWidth(200)
-        output_type_layout.addWidget(self.output_type_combo)
-        output_type_layout.addStretch()
+        output_type_layout.addWidget(self.output_type_combo, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(output_type_layout)
 
         # Botão de conversão
@@ -73,21 +76,23 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Layout para número 1
-        input_sum1_layout = QHBoxLayout()
-        input_sum1_layout.addWidget(QLabel("Número 1:"))
+        input_sum1_layout = QVBoxLayout()
+        input_sum1_label = QLabel("Número 1:")
+        input_sum1_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_sum1_layout.addWidget(input_sum1_label)
         self.input_entry_sum1 = QLineEdit()
         self.input_entry_sum1.setMaximumWidth(200)
-        input_sum1_layout.addWidget(self.input_entry_sum1)
-        input_sum1_layout.addStretch()
+        input_sum1_layout.addWidget(self.input_entry_sum1, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_sum1_layout)
 
         # Layout para número 2
-        input_sum2_layout = QHBoxLayout()
-        input_sum2_layout.addWidget(QLabel("Número 2:"))
+        input_sum2_layout = QVBoxLayout()
+        input_sum2_label = QLabel("Número 2:")
+        input_sum2_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_sum2_layout.addWidget(input_sum2_label)
         self.input_entry_sum2 = QLineEdit()
         self.input_entry_sum2.setMaximumWidth(200)
-        input_sum2_layout.addWidget(self.input_entry_sum2)
-        input_sum2_layout.addStretch()
+        input_sum2_layout.addWidget(self.input_entry_sum2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_sum2_layout)
 
         # Botão de soma
@@ -106,21 +111,23 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Layout para número 1
-        input_multiply1_layout = QHBoxLayout()
-        input_multiply1_layout.addWidget(QLabel("Número 1:"))
+        input_multiply1_layout = QVBoxLayout()
+        input_multiply1_label = QLabel("Número 1:")
+        input_multiply1_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_multiply1_layout.addWidget(input_multiply1_label)
         self.input_entry_multiply1 = QLineEdit()
         self.input_entry_multiply1.setMaximumWidth(200)
-        input_multiply1_layout.addWidget(self.input_entry_multiply1)
-        input_multiply1_layout.addStretch()
+        input_multiply1_layout.addWidget(self.input_entry_multiply1, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_multiply1_layout)
 
         # Layout para número 2
-        input_multiply2_layout = QHBoxLayout()
-        input_multiply2_layout.addWidget(QLabel("Número 2:"))
+        input_multiply2_layout = QVBoxLayout()
+        input_multiply2_label = QLabel("Número 2:")
+        input_multiply2_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        input_multiply2_layout.addWidget(input_multiply2_label)
         self.input_entry_multiply2 = QLineEdit()
         self.input_entry_multiply2.setMaximumWidth(200)
-        input_multiply2_layout.addWidget(self.input_entry_multiply2)
-        input_multiply2_layout.addStretch()
+        input_multiply2_layout.addWidget(self.input_entry_multiply2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_multiply2_layout)
 
         # Botão de multiplicação
@@ -255,18 +262,25 @@ class MainWindow(QMainWindow):
 
     def apply_styles(self):
         self.setStyleSheet("""
+            * {
+            background-color: #2b2b2b;
+            }
+                           
             QMainWindow {
-                background-color: #f0f0f0;
+                background-color: #2b2b2b;
             }
             QLabel {
                 font-size: 14px;
-                color: #333;
+                color: #ffffff;
+                text-align: center;
             }
             QLineEdit {
                 font-size: 14px;
                 padding: 5px;
-                border: 1px solid #ccc;
+                border: 1px solid #555555;
                 border-radius: 5px;
+                background-color: #3c3c3c;
+                color: #ffffff;
             }
             QLineEdit:focus {
                 border: 1px solid #0078d7;
@@ -274,36 +288,72 @@ class MainWindow(QMainWindow):
             QPushButton {
                 font-size: 14px;
                 padding: 10px;
-                background-color: #0078d7;
+                background-color: #555555;
                 color: white;
                 border: none;
                 border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #005bb5;
+                background-color: #777777;
             }
             QPushButton:pressed {
-                background-color: #003f8a;
+                background-color: #999999;
             }
             QTextEdit {
+                width: 150px;
                 font-size: 14px;
                 padding: 10px;
-                border: 1px solid #ccc;
+                border: 1px solid #555555;
                 border-radius: 5px;
+                background-color: #3c3c3c;
+                color: #ffffff;
             }
             QComboBox {
+                width: 150px;
                 font-size: 14px;
                 padding: 5px;
-                border: 1px solid #ccc;
+                border: 1px solid #555555;
                 border-radius: 5px;
+                background-color: #3c3c3c;
+                color: #ffffff;
             }
             QComboBox:focus {
                 border: 1px solid #0078d7;
             }
+                           
+            QComboBox QAbstractItemView {
+                background-color: #3c3c3c;
+                color: #ffffff;
+                selection-background-color: #555555;
+                selection-color: #ffffff;
+            }
+
+            QTabWidget::pane {
+            border: 1px solid #555555;
+            background-color: #2b2b2b;
+             }
+            QTabBar::tab {
+                background: #3c3c3c;
+                color: #ffffff;
+                padding: 10px;
+                border: 1px solid #555555;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+            }
+            QTabBar::tab:selected {
+                background: #555555;
+                color: #ffffff;
+            }
+            QTabBar::tab:hover {
+                background: #777777;
+                color: #ffffff;
+            }
         """)
 
+# Asegúrate de llamar a apply_styles en el constructor
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
+    window.apply_styles()  # Aplicar estilos oscuros
     window.show()
     sys.exit(app.exec())

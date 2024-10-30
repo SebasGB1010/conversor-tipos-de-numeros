@@ -1,33 +1,39 @@
 # Conversor de Números
 
-Esta aplicação é um conversor de números que permite converter entre diferentes sistemas numéricos: binário, decimal, octal e hexadecimal. A interface gráfica está construída utilizando `tkinter` e `ttk` para um design moderno e responsivo.
+Esta aplicação permite converter números entre diferentes sistemas numéricos (Binário, Decimal, Octal e Hexadecimal), bem como somar e multiplicar números binários.
 
-## Características
+## Funcionalidades
 
-- Conversão entre sistemas numéricos: Binário, Decimal, Octal e Hexadecimal.
-- Visualização dos passos detalhados da conversão.
-- Cópia dos passos da conversão para a área de transferência.
-- Interface gráfica moderna e responsiva.
-
-## Requisitos
-
-- Python 3.x
-- Tkinter (incluído com Python)
+- Conversão entre Binário, Decimal, Octal e Hexadecimal.
+- Soma de números binários.
+- Multiplicação de números binários.
+- Interface gráfica moderna.
+- Resultados e passos da conversão exibidos na interface.
+- Possibilidade de copiar os passos da conversão para a área de transferência.
 
 ## Instalação
 
-1. Clone este repositório na sua máquina local.
+1. Clone o repositório:
     ```sh
-    git clone https://github.com/teu-usuario/conversor-numeros.git
+    git clone https://github.com/seu-usuario/conversor-de-numeros.git
     ```
-2. Navegue até ao diretório do projeto.
+2. Navegue até o diretório do projeto:
     ```sh
-    cd conversor-numeros
+    cd conversor-de-numeros
+    ```
+3. Crie um ambiente virtual e ative-o:
+    ```sh
+    python -m venv venv
+    source venv/bin/activate  # No Windows, use `venv\Scripts\activate`
+    ```
+4. Instale as dependências:
+    ```sh
+    pip install -r requirements.txt
     ```
 
 ## Uso
 
-1. Execute o script `conversor.py`.
+1. Execute a aplicação:
     ```sh
     python conversor.py
     ```
@@ -48,5 +54,6 @@ Este projeto está licenciado sob a Licença MIT. Consulte o arquivo [LICENSE](L
 
 ### Reorganização da Interface
 
-- Os elementos de entrada estão agora à esquerda e o resultado à direita.
+- Os elementos de entrada estão agora centrados na interface.
 - Adicionada uma barra de rolagem ao widget de texto para permitir o deslocamento quando o conteúdo é muito grande.
+- Melhorias no estilo da interface utilizando QSS para um tema moderno e escuro.
