@@ -1,12 +1,15 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QComboBox
 from PyQt6.QtCore import Qt, QTimer
+from PyQt6.QtGui import QIcon
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Conversor de Números")
         self.setGeometry(100, 100, 800, 600)
+
+        self.setWindowIcon(QIcon("logo.ico"))
 
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
