@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QTextEdit, QComboBox
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QTimer
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -25,6 +25,21 @@ class MainWindow(QMainWindow):
 
         self.apply_styles()
 
+        # Timer para la conversión en tiempo real
+        self.timer_conversion = QTimer()
+        self.timer_conversion.setSingleShot(True)
+        self.timer_conversion.timeout.connect(self.convert)
+
+        # Timer para la suma en tiempo real
+        self.timer_sum = QTimer()
+        self.timer_sum.setSingleShot(True)
+        self.timer_sum.timeout.connect(self.sum_binary)
+
+        # Timer para la multiplicación en tiempo real
+        self.timer_multiply = QTimer()
+        self.timer_multiply.setSingleShot(True)
+        self.timer_multiply.timeout.connect(self.multiply_binary)
+
     def init_conversion_tab(self):
         layout = QVBoxLayout()
 
@@ -46,6 +61,7 @@ class MainWindow(QMainWindow):
         input_number_layout.addWidget(input_number_label)
         self.input_entry = QLineEdit()
         self.input_entry.setMaximumWidth(200)
+        self.input_entry.textChanged.connect(self.on_input_changed_conversion)
         input_number_layout.addWidget(self.input_entry, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_number_layout)
 
@@ -82,6 +98,7 @@ class MainWindow(QMainWindow):
         input_sum1_layout.addWidget(input_sum1_label)
         self.input_entry_sum1 = QLineEdit()
         self.input_entry_sum1.setMaximumWidth(200)
+        self.input_entry_sum1.textChanged.connect(self.on_input_changed_sum)
         input_sum1_layout.addWidget(self.input_entry_sum1, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_sum1_layout)
 
@@ -92,6 +109,7 @@ class MainWindow(QMainWindow):
         input_sum2_layout.addWidget(input_sum2_label)
         self.input_entry_sum2 = QLineEdit()
         self.input_entry_sum2.setMaximumWidth(200)
+        self.input_entry_sum2.textChanged.connect(self.on_input_changed_sum)
         input_sum2_layout.addWidget(self.input_entry_sum2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_sum2_layout)
 
@@ -117,6 +135,7 @@ class MainWindow(QMainWindow):
         input_multiply1_layout.addWidget(input_multiply1_label)
         self.input_entry_multiply1 = QLineEdit()
         self.input_entry_multiply1.setMaximumWidth(200)
+        self.input_entry_multiply1.textChanged.connect(self.on_input_changed_multiply)
         input_multiply1_layout.addWidget(self.input_entry_multiply1, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_multiply1_layout)
 
@@ -127,6 +146,7 @@ class MainWindow(QMainWindow):
         input_multiply2_layout.addWidget(input_multiply2_label)
         self.input_entry_multiply2 = QLineEdit()
         self.input_entry_multiply2.setMaximumWidth(200)
+        self.input_entry_multiply2.textChanged.connect(self.on_input_changed_multiply)
         input_multiply2_layout.addWidget(self.input_entry_multiply2, alignment=Qt.AlignmentFlag.AlignCenter)
         layout.addLayout(input_multiply2_layout)
 
@@ -141,6 +161,15 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.result_text_multiply)
 
         self.multiply_tab.setLayout(layout)
+
+    def on_input_changed_conversion(self):
+        self.timer_conversion.start(500)  # Espera 500 ms antes de realizar la conversión
+
+    def on_input_changed_sum(self):
+        self.timer_sum.start(500)  # Espera 500 ms antes de realizar la suma
+
+    def on_input_changed_multiply(self):
+        self.timer_multiply.start(500)  # Espera 500 ms antes de realizar la multiplicación
 
     def convert(self):
         input_type = self.input_type_combo.currentText()
@@ -178,8 +207,18 @@ class MainWindow(QMainWindow):
     def sum_binary(self):
         bin1 = self.input_entry_sum1.text()
         bin2 = self.input_entry_sum2.text()
-        decimal1 = int(bin1, 2)
-        decimal2 = int(bin2, 2)
+
+        if not bin1 or not bin2:
+            self.result_text_sum.setText("Por favor, insira ambos os números binários.")
+            return
+
+        try:
+            decimal1 = int(bin1, 2)
+            decimal2 = int(bin2, 2)
+        except ValueError:
+            self.result_text_sum.setText("Entrada inválida. Por favor, insira números binários válidos.")
+            return
+
         sum_result = decimal1 + decimal2
         binary_result = bin(sum_result)[2:]
         self.result_text_sum.setText(f"Soma: {binary_result}")
@@ -187,8 +226,18 @@ class MainWindow(QMainWindow):
     def multiply_binary(self):
         bin1 = self.input_entry_multiply1.text()
         bin2 = self.input_entry_multiply2.text()
-        decimal1 = int(bin1, 2)
-        decimal2 = int(bin2, 2)
+
+        if not bin1 or not bin2:
+            self.result_text_multiply.setText("Por favor, insira ambos os números binários.")
+            return
+
+        try:
+            decimal1 = int(bin1, 2)
+            decimal2 = int(bin2, 2)
+        except ValueError:
+            self.result_text_multiply.setText("Entrada inválida. Por favor, insira números binários válidos.")
+            return
+
         multiply_result = decimal1 * decimal2
         binary_result = bin(multiply_result)[2:]
         self.result_text_multiply.setText(f"Multiplicação: {binary_result}")
@@ -262,10 +311,6 @@ class MainWindow(QMainWindow):
 
     def apply_styles(self):
         self.setStyleSheet("""
-            * {
-            background-color: #2b2b2b;
-            }
-                           
             QMainWindow {
                 background-color: #2b2b2b;
             }
@@ -320,18 +365,16 @@ class MainWindow(QMainWindow):
             QComboBox:focus {
                 border: 1px solid #0078d7;
             }
-                           
             QComboBox QAbstractItemView {
                 background-color: #3c3c3c;
                 color: #ffffff;
                 selection-background-color: #555555;
                 selection-color: #ffffff;
             }
-
             QTabWidget::pane {
-            border: 1px solid #555555;
-            background-color: #2b2b2b;
-             }
+                border: 1px solid #555555;
+                background-color: #2b2b2b;
+            }
             QTabBar::tab {
                 background: #3c3c3c;
                 color: #ffffff;
@@ -350,7 +393,6 @@ class MainWindow(QMainWindow):
             }
         """)
 
-# Asegúrate de llamar a apply_styles en el constructor
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
